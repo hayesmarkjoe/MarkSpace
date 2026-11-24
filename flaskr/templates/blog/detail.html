@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}{{ post['title'] }}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <article class="post">
+    <p class="about">{{ post['created'].strftime('%Y-%m-%d') }}</p>
+    <p class="body">{{ post['body'] }}</p>
+  </article>
+
+  {% if g.user %}
+    <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
+    <a class="action" href="{{ url_for('blog.reply', id=post['id']) }}">Reply</a>
+  {% endif %}
+  <a class="action" href="{{ url_for('blog.section_list', section=post['section']) }}">&larr; Back to {{ post['section']|capitalize }}</a>
+
+  <h2>Comments</h2>
+  {% for reply in replies %}
+    <div class="reply">
+      <div class="about">
+        by {{ reply['username'] }} on {{ reply['created'].strftime('%Y-%m-%d') }}
+      </div>
+      <p class="body">{{ reply['body'] }}</p>
+    </div>
+  {% else %}
+    <p>No comments yet.</p>
+  {% endfor %}
+{% endblock %}
