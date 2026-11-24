@@ -7,7 +7,7 @@
 {% block content %}
   <article class="post">
     <p class="about">{{ post['created'].strftime('%Y-%m-%d') }}</p>
-    <p class="body">{{ post['body'] }}</p>
+    <div class="body">{{ post['body']|md }}</div>
   </article>
 
   {% if g.user %}
@@ -22,7 +22,7 @@
       <div class="about">
         by {{ reply['username'] }} on {{ reply['created'].strftime('%Y-%m-%d') }}
       </div>
-      <p class="body">{{ reply['body'] }}</p>
+      <div class="body">{{ reply['body']|md }}</div>
     </div>
   {% else %}
     <p>No comments yet.</p>

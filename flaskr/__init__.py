@@ -1,5 +1,7 @@
 import os
 from flask import Flask
+import markdown, bleach
+from markupsafe import Markup
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -30,6 +32,22 @@ def create_app(test_config=None):
     from . import blog
     app.register_blueprint(blog.bp)
     app.add_url_rule('/', endpoint='index')
+
+    ALLOWED_TAGS = list(bleach.sanitizer.ALLOWED_TAGS) + [
+            "p", "pre", "code", "span", "div", "h1", "h2", "h3", 
+            "h4", "ul", "ol", "li", "br", "hr", 
+    ]
+    ALLOWED_ATTRS = {"*": ["class"], "a": ["href", "title"]}
+
+    def render_markdown(text):
+        html = markdown.markdown(
+                text or "",
+                extensions=["fenced_code", "codehilite", "nl2br"],
+                extension_configs={"codehilite": {"guess_lang": False}}
+        )
+        return Markup(bleach.clean(html, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRS))
+
+    app.add_template_filter(render_markdown, "md")
 
     return app
 
